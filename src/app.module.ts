@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { IntegrationServicesModule } from './integration-services/integration.module';
 import { appConfig, typeOrmConfig } from './shared/config';
 import { UrlModule } from './url/url.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { UrlModule } from './url/url.module';
       useFactory: typeOrmConfig,
     }),
     UrlModule,
+    UsersModule,
+    AuthModule,
+    IntegrationServicesModule,
   ],
 })
 export class AppModule {}
