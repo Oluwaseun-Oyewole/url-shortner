@@ -9,6 +9,7 @@ export const SuccessApiResponse = <TModel extends Type<any>>(
     isArray?: boolean;
     description?: string;
     status?: number | HttpStatus;
+    message?: string;
   } = {
     isArray: false,
     status: 200,
@@ -21,18 +22,26 @@ export const SuccessApiResponse = <TModel extends Type<any>>(
         allOf: [
           { $ref: getSchemaPath(APISuccessResponse) },
           {
-            properties: options?.isArray
-              ? {
-                  payload: {
-                    type: 'array',
-                    items: { $ref: getSchemaPath(model) },
-                  },
-                }
-              : {
-                  payload: {
-                    allOf: [{ $ref: getSchemaPath(model) }],
-                  },
+            properties: {
+              ...(options?.message && {
+                message: {
+                  type: 'string',
+                  default: options.message,
                 },
+              }),
+              ...(options?.isArray
+                ? {
+                    data: {
+                      type: 'array',
+                      items: { $ref: getSchemaPath(model) },
+                    },
+                  }
+                : {
+                    data: {
+                      allOf: [{ $ref: getSchemaPath(model) }],
+                    },
+                  }),
+            },
           },
         ],
       },
@@ -43,7 +52,7 @@ export const SuccessApiResponse = <TModel extends Type<any>>(
 };
 
 export const ErrorApiResponse = (
-  options: { status?: number | HttpStatus } = {
+  options: { status?: number | HttpStatus; message?: string } = {
     status: 400,
   },
 ) => {
@@ -51,9 +60,22 @@ export const ErrorApiResponse = (
     ApiExtraModels(APIErrorResponse),
     ApiResponse({
       schema: {
-        allOf: [{ $ref: getSchemaPath(APIErrorResponse) }],
+        allOf: [
+          { $ref: getSchemaPath(APIErrorResponse) },
+          {
+            properties: {
+              ...(options?.message && {
+                message: {
+                  type: 'string',
+                  default: options.message,
+                },
+              }),
+            },
+          },
+        ],
       },
       status: options.status,
+      description: 'Bad request - validation errors',
     }),
   );
 };

@@ -4,18 +4,26 @@ import {
   ErrorApiResponse,
   SuccessApiResponse,
 } from 'src/shared/decorators/swagger.decorators';
-import { CreateUserDto } from 'src/users/dto';
+import { CreateUserDto, LoginDto } from 'src/users/dto';
 import { AuthService } from './auth.service';
-import { UserAuthResponseDto } from './dto';
+import { UserAuthResponseDto, VerifyAuthResponseDto } from './dto';
+import { verifyAccountDto } from './dto/auth.dto';
 
-@ErrorApiResponse()
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @SuccessApiResponse(UserAuthResponseDto, { status: 201 })
-  @ApiOperation({ summary: 'Register a new user' })
+  @ErrorApiResponse({ message: 'Invalid OTP', status: 400 })
+  @SuccessApiResponse(UserAuthResponseDto, {
+    status: 201,
+    description: 'User created successfully - verification email sent',
+    message:
+      'User created successfully. Please check your email to verify your account.',
+  })
+  @ApiOperation({
+    summary: 'User registration',
+    description: 'Register a new user in the system with provided details.',
+  })
   @ApiBody({
     type: CreateUserDto,
     examples: {
@@ -32,6 +40,52 @@ export class AuthController {
   @Post('/register')
   async register(@Body() body: CreateUserDto) {
     return await this.authService.register(body).catch((error) => {
+      throw new BadRequestException(error?.message || error, { cause: error });
+    });
+  }
+
+  @ApiOperation({ summary: 'User Login' })
+  @SuccessApiResponse(UserAuthResponseDto)
+  @ErrorApiResponse()
+  @ApiBody({
+    type: CreateUserDto,
+    examples: {
+      default: {
+        summary: 'Login Example',
+        value: {
+          email: 'john@example.com',
+          password: 'password123',
+        },
+      },
+    },
+  })
+  @Post('/login')
+  async login(@Body() body: LoginDto) {
+    return await this.authService.login(body).catch((error) => {
+      throw new BadRequestException(error?.message || error, { cause: error });
+    });
+  }
+
+  @ApiOperation({ summary: 'Verify User' })
+  @ErrorApiResponse({ message: 'Invalid token' })
+  @SuccessApiResponse(VerifyAuthResponseDto, {
+    message: 'Account successfully activated',
+  })
+  @ApiBody({
+    type: CreateUserDto,
+    examples: {
+      default: {
+        summary: 'Verify Example',
+        value: {
+          email: 'john@example.com',
+          token: 'password123',
+        },
+      },
+    },
+  })
+  @Post('/verify')
+  async verify(@Body() body: verifyAccountDto) {
+    return await this.authService.verify(body).catch((error) => {
       throw new BadRequestException(error?.message || error, { cause: error });
     });
   }

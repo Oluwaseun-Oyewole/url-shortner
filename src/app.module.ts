@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { IntegrationServicesModule } from './integration-services/integration.module';
 import { appConfig, typeOrmConfig } from './shared/config';
 import { UrlModule } from './url/url.module';
+import { UserTokensModule } from './user-tokens/user-tokens.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     AuthModule,
     IntegrationServicesModule,
+    UserTokensModule,
   ],
 })
 export class AppModule {}

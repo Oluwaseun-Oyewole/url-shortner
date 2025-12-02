@@ -26,6 +26,19 @@ export class CreateUserDto {
   password: string;
 }
 
+export class LoginDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(6)
+  @ApiProperty()
+  password: string;
+}
+
 export class UpdateUserDto {
   @IsString()
   @IsOptional()

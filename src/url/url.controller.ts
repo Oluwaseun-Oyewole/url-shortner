@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ErrorApiResponse,
   SuccessApiResponse,
@@ -16,7 +16,24 @@ export class UrlController {
   constructor(private readonly urlService: UrlService) {}
 
   @ApiOperation({ summary: 'Shorten URL' })
-  @SuccessApiResponse(UrlResponseDto)
+  @SuccessApiResponse(UrlResponseDto, {
+    status: 201,
+    description: 'Shorten a long url',
+    message: 'Successful',
+  })
+  @ApiBody({
+    type: CreateUrlDto,
+    examples: {
+      default: {
+        summary: 'Example',
+        value: {
+          originalUrl:
+            'https://www.youtube.com/watch?v=XvFmUE-36Kc&list=TLPQMjIxMDIwMjU_jVc2UYDLEQ&index=1',
+          customCode: '12345',
+        },
+      },
+    },
+  })
   @Post('shorten')
   async shorten(@Body() body: CreateUrlDto) {
     const url = await this.urlService.createShortUrl(body);

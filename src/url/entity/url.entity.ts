@@ -1,3 +1,4 @@
+import { appConfig } from 'src/shared/config';
 import { User } from 'src/users/entity/user.entity';
 import {
   Column,
@@ -9,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('urls')
 export class Url {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,16 +24,17 @@ export class Url {
   @Column({ default: 0 })
   clicks: number;
 
-  @ManyToOne(() => User, (user) => user.urls, { nullable: false })
+  @ManyToOne(() => User, (user) => user.urls, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
-
-  @Column({ nullable: true })
-  userId: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  get shortUrl(): string {
+    return `${appConfig().appLink}/${this.shortCode}`;
+  }
 }

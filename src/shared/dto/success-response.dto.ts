@@ -5,11 +5,14 @@ export class APISuccessResponse<TData = unknown> {
   success: boolean;
 
   @ApiProperty()
-  payload: TData;
+  message: string;
+
+  @ApiProperty()
+  data: TData;
 }
 
 export class APISSuccessResponsePaginated<TData = any> {
   @ApiProperty()
   success: boolean;
-  payload: TData;
+  data: TData;
 }

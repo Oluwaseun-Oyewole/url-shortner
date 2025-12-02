@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Url } from 'src/url/entity/url.entity';
+import { UserToken } from 'src/user-tokens/entity';
 import {
   Column,
   CreateDateColumn,
@@ -11,7 +12,7 @@ import {
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @Column({ unique: true })
@@ -36,6 +37,9 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Url, (url) => url.user)
+  @OneToMany(() => Url, (url) => url.user, { cascade: true })
   urls: Url[];
+
+  @OneToMany(() => UserToken, (token) => token.user, { cascade: true })
+  tokens: UserToken[];
 }
